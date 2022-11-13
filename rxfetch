@@ -13,32 +13,22 @@ cyan="\033[1;36m"
 reset="\033[0m"
 bgyellow="\033[1;43;33m"
 bgwhite="\033[1;47;37m"
-c0=${reset}
-c1=${magenta}
-c2=${green}
-c3=${white}
-c4=${blue}
-c5=${red}
-c6=${yellow}
-c7=${cyan}
-c8=${black}
-c9=${bgyellow}
-c10=${bgwhite}
+c0=$reset
+c1=$magenta
+c2=$green
+c3=$white
+c4=$blue
+c5=$red
+c6=$yellow
+c7=$cyan
+c8=$black
+c9=$bgyellow
+c10=$bgwhite
 
 # Get the kernel
 # This will decide the further actionsvand command usages as bsd and gnu tools even with same name are DIFFERENT.
 kernel=$(uname -s)
 
-# Setup fonts
-setup_fonts() {
-	if [ "$kernel" != Android ]; then
-		if ! fc-match :family='Material' 2>/dev/null | grep -Eq '^Material.ttf' ; then
-			mkdir -p "$HOME/.local/share/fonts"
-			cp ttf-material-design-icons/* "$HOME/.local/share/fonts"
-			fc-cache -vf &>/dev/null
-		fi
-	fi
-}
 # Get the init
 get_init() {
 	if [ "$kernel" = "Android" ]; then
@@ -64,7 +54,7 @@ get_pkg_count() {
 			case "$package_manager" in
 			xbps-install) xbps-query -l | wc -l ;;
 			apk) apk search | wc -l ;;
-			apt) if [ "$kernel" != "Darwin" ]; then 
+			apt) if [ "$kernel" != "Darwin" ]; then
 					echo $(($(apt list --installed 2>/dev/null | wc -l) - 1))
 				 else
 					echo 0
@@ -179,10 +169,10 @@ get_distro_name() {
 get_storage_info() {
 	if [ "$kernel" = Android ]; then
 		_MOUNTED_ON="/data"
-		_GREP_ONE_ROW="$(df -h | grep ${_MOUNTED_ON})"
-		_SIZE="$(echo "${_GREP_ONE_ROW}" | awk '{print $2}')"
-		_USED="$(echo "${_GREP_ONE_ROW}" | awk '{print $3}')"
-		echo "$(head -n1 <<<"${_USED}")B / $(head -n1 <<<"${_SIZE}")B"
+		_GREP_ONE_ROW="$(df -h | grep "$_MOUNTED_ON")"
+		_SIZE="$(echo "$_GREP_ONE_ROW" | awk '{print $2}')"
+		_USED="$(echo "$_GREP_ONE_ROW" | awk '{print $3}')"
+		echo "$(head -n1 <<<"$_USED")B / $(head -n1 <<<"$_SIZE")B"
 	elif [ "$kernel" = "Darwin" ]; then
 		total_size=$(df -Hl | grep -w "/" | awk '{print $2}')
 		free_size=$(df -Hl | grep -w "/" | awk '{print $4}')
@@ -245,31 +235,29 @@ get_de_wm() {
 	echo "${wm:-unknown}"
 }
 
-setup_fonts
-
 echo "               "
 
 if [ "$kernel" = Android ]; then
-	echo -e "               ${c5}phone${c3}  $(getprop ro.product.brand) $(getprop ro.product.model)"
+	echo -e "               ${c5}phone$c3  $(getprop ro.product.brand) $(getprop ro.product.model)"
 fi
 
-echo -e "               ${c1}os${c3}     $(get_distro_name) $(uname -m)"
-echo -e "               ${c2}ker${c3}    $(uname -r)"
-echo -e "     ${c3}•${c8}_${c3}•${c0}       ${c7}pkgs${c3}   $(get_package_info)"
-echo -e "     ${c8}${c0}${c9}oo${c0}${c8}|${c0}       ${c4}sh${c3}     ${SHELL##*/}"
-echo -e "    ${c8}/${c0}${c10} ${c0}${c8}'\'${c0}      ${c6}ram${c3}    $(get_mem)"
-echo -e "   ${c9}(${c0}${c8}\_;/${c0}${c9})${c0}      ${c1}init${c3}   $(get_init)"
+echo -e "               ${c1}os$c3     $(get_distro_name) $(uname -m)"
+echo -e "               ${c2}ker$c3    $(uname -r)"
+echo -e "     $c3•${c8}_$c3•$c0       ${c7}pkgs$c3   $(get_package_info)"
+echo -e "     $c8$c0${c9}oo$c0$c8|$c0       ${c4}sh$c3     ${SHELL##*/}"
+echo -e "    $c8/$c0$c10 $c0$c8'\'$c0      ${c6}ram$c3    $(get_mem)"
+echo -e "   $c9($c0$c8\_;/$c0$c9)$c0      ${c1}init$c3   $(get_init)"
 
 if [ -n "$DISPLAY" ]; then
-	echo -e "               ${c2}de/wm${c3}  $(get_de_wm)"
+	echo -e "               ${c2}de/wm$c3  $(get_de_wm)"
 fi
 
-echo -e "               ${c7}up${c3}    $(get_uptime)"
-echo -e "               ${c6}disk${c3}   $(get_storage_info)"
+echo -e "               ${c7}up$c3    $(get_uptime)"
+echo -e "               ${c6}disk$c3   $(get_storage_info)"
 echo -e "               "
 
 if [ "$kernel" != Android ] && [ "$kernel" != Darwin ]; then
-	echo -e "        ${c6}󰮯  ${c6}${c2}󰊠  ${c2}${c4}󰊠  ${c4}${c5}󰊠  ${c5}${c7}󰊠  ${c7}"
+	echo -e "        $c6󰮯  $c6$c2󰊠  $c2$c4󰊠  $c4$c5󰊠  $c5$c7󰊠  $c7"
 fi
 
 echo -e "               \033[0m"
